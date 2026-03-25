@@ -98,7 +98,18 @@ nav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:80px;background:radial-gradient(ellipse at 50% 60%,#1a1508 0%,#0a0a0a 70%);position:relative;overflow:hidden}
 /* hero-bg removed */
 .hero>div{position:relative;z-index:1}
-#heroLogo{max-height:100px;max-width:260px;object-fit:contain;margin:0 auto 24px;filter:drop-shadow(0 4px 20px rgba(201,168,76,.3))}
+#heroLogo{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  max-height:320px;max-width:320px;
+  object-fit:contain;
+  opacity:.08;
+  filter:blur(1px) grayscale(30%);
+  z-index:0;
+  pointer-events:none;
+  display:none;
+}
 .hero-no-img .hero-bg-img{display:none}
 .hero-tag{display:inline-block;border:1px solid var(--gold);color:var(--gold);padding:6px 20px;font-size:11px;letter-spacing:4px;margin-bottom:28px;animation:fd 1s ease both}
 .hero h1{font-size:clamp(44px,8vw,96px);font-weight:900;line-height:.9;letter-spacing:-2px;animation:fd 1s .2s ease both}
@@ -491,7 +502,7 @@ footer p{color:#333;font-size:12px}
 
 <div class="hero hero-no-img" id="heroSection">
   <div>
-    <img id="heroLogo" src="" alt="" style="display:none;max-height:100px;max-width:260px;object-fit:contain;margin:0 auto 24px;display:block">
+    <img id="heroLogo" src="" alt="" style="display:none">
     <div class="hero-tag">أزياء راقية — جودة لا مثيل لها</div>
     <h1 id="heroTitle">MODA<br><span>STORE</span></h1>
     <p>تشكيلة واسعة من الملابس العصرية لكل الأذواق</p>
@@ -907,21 +918,25 @@ function applyConfig(){
   const heroLogoEl=document.getElementById('heroLogo');
   const heroTitleEl=document.getElementById('heroTitle');
 
+  // Always show store name text
+  navLogoEl.textContent=n.split(' ')[0];
+  if(footerLogoEl) footerLogoEl.textContent=n.split(' ')[0];
+  if(heroTitleEl){
+    heroTitleEl.style.display='block';
+    const p=n.split(' ');
+    heroTitleEl.innerHTML=p[0]+(p[1]?`<br><span>${p.slice(1).join(' ')}</span>`:'');
+  }
+  // Logo as transparent background behind hero title
+  const heroSec=document.getElementById('heroSection');
   if(cfg.logo){
-    // Show image logo
-    navLogoEl.innerHTML=`<img src="${cfg.logo}" alt="${n}" style="height:36px;object-fit:contain;max-width:140px;vertical-align:middle">`;
-    if(footerLogoEl) footerLogoEl.innerHTML=`<img src="${cfg.logo}" alt="${n}" style="height:50px;object-fit:contain;max-width:160px">`;
-    if(heroLogoEl){heroLogoEl.src=cfg.logo;heroLogoEl.style.display='block';}
-    if(heroTitleEl) heroTitleEl.style.display='none';
-  } else {
-    navLogoEl.textContent=n.split(' ')[0];
-    if(footerLogoEl) footerLogoEl.textContent=n.split(' ')[0];
-    if(heroLogoEl) heroLogoEl.style.display='none';
-    if(heroTitleEl){
-      heroTitleEl.style.display='block';
-      const p=n.split(' ');
-      heroTitleEl.innerHTML=p[0]+(p[1]?`<br><span>${p.slice(1).join(' ')}</span>`:'');
+    if(heroLogoEl){
+      heroLogoEl.src=cfg.logo;
+      heroLogoEl.style.display='block';
     }
+    if(heroSec) heroSec.classList.remove('hero-no-img');
+  } else {
+    if(heroLogoEl) heroLogoEl.style.display='none';
+    if(heroSec) heroSec.classList.add('hero-no-img');
   }
 }
 
